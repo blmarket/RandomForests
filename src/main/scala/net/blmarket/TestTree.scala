@@ -43,6 +43,6 @@ object TestTree {
     // val trainErr = labelAndPreds.filter(r => r._1 != r._2).count.toDouble / data.count
     // println("Training Error = " + trainErr)
 
-    BestSplitter.split(data)
+    MySplitter.split(data)
   }
 }
