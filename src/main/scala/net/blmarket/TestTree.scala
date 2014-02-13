@@ -3,6 +3,7 @@ package net.blmarket
 import org.apache.spark.mllib.classification.SVMWithSGD
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.SparkContext
+import net.blmarket.rforest.{TreeBuilder, MySplitter}
 
 object TestTree {
   def processLoan() {
@@ -44,5 +45,16 @@ object TestTree {
     // println("Training Error = " + trainErr)
 
     MySplitter.split(data)
+
+    val tree = TreeBuilder.build(data, 1)
+
+    val labelAndPreds = data.map { point =>
+      val prediction = tree.predict(point.features)
+      (point.label, prediction)
+    }
+
+    val trainErr = labelAndPreds.filter(r => r._1 != r._2).count.toDouble / data.count
+    println("Training Error = " + trainErr)
+    println(tree)
   }
 }
