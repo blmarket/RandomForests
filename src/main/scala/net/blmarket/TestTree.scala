@@ -30,7 +30,7 @@ object TestTree {
       }
     }
 
-    val sc = new SparkContext(master, "SparkCSV")
+    val sc = new SparkContext("spark://ec2-54-250-8-40.ap-northeast-1.compute.amazonaws.com:7077", "SparkCSV", "/root/spark", List("target/scala-2.10/randomforests_2.10-0.1.0.jar"))
     val train = sc.textFile(file)
 
     def splitData(datum: Array[String]): LabeledPoint = {
@@ -45,7 +45,7 @@ object TestTree {
   }
 
   def testIris() {
-    val sc = new SparkContext("local[3]", "SparkCSV")
+    val sc = new SparkContext("spark://ec2-54-250-8-40.ap-northeast-1.compute.amazonaws.com:7077", "SparkCSV", "/root/spark", List("target/scala-2.10/randomforests_2.10-0.1.0.jar"))
     val train = sc.textFile("iris.data")
     def parseIris(datum: Array[String]) = LabeledPoint(datum.head.toDouble, datum.tail.map(_.toDouble))
 
@@ -55,9 +55,8 @@ object TestTree {
   }
 
   def main(args: Array[String]) {
-    System.setProperty("spark.executor.memory", "1500m")
-
     println("Usage: [master] [file_path]")
-    processLoan(args(0), args(1))
+    testIris()
+    // processLoan(args(0), args(1))
   }
 }
