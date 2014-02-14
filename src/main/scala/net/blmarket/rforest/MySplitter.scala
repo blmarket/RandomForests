@@ -22,7 +22,7 @@ object MySplitter {
 
     def randSplit: Splitter = {
       val pick = Random.nextInt(f_idx.length)
-      val kv = data.keyBy(_.features(pick))
+      val kv = data.keyBy(_.features(pick)).cache()
 
       // FIXME: if we have last() func, we don't need to do same sort twice.
       val min_feature = kv.sortByKey(true).first()._1
@@ -42,7 +42,7 @@ object MySplitter {
 
     val minsplit = (1 to 10).map(_ => trysplit).minBy(_._1)
     println(minsplit)
-    (minsplit._2, minsplit._3)
+    (minsplit._2, minsplit._3.persist())
   }
 }
 

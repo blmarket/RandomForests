@@ -40,7 +40,7 @@ object TestTree {
       LabeledPoint(loss, others)
     }
 
-    val data = train.map(x => splitData(x.split(",")))
+    val data = train.map(x => splitData(x.split(","))).persist()
     trainAndTest(data)
   }
 
