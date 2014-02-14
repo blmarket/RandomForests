@@ -42,7 +42,7 @@ object MySplitter {
 
     val minsplit = (1 to 10).map(_ => trysplit).minBy(_._1)
     println(minsplit)
-    (minsplit._2, minsplit._3.persist())
+    (minsplit._2, minsplit._3)
   }
 }
 
