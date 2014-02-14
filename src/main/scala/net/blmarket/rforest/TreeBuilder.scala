@@ -3,7 +3,6 @@ package net.blmarket.rforest
 import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.regression.LabeledPoint
-import net.blmarket.rforest.MySplitter
 
 object TreeBuilder {
   def build(data: RDD[LabeledPoint], leftDepth: Int): DecisionTree = {

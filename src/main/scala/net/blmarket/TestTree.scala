@@ -22,7 +22,7 @@ object TestTree {
     println(tree)
   }
 
-  def processLoan() {
+  def processLoan(master: String, file: String) {
     def parseDouble(x: String): Double = {
       x match {
         case "NA" => Double.NaN
@@ -30,8 +30,8 @@ object TestTree {
       }
     }
 
-    val sc = new SparkContext("local[3]", "SparkCSV")
-    val train = sc.textFile("train0.csv")
+    val sc = new SparkContext(master, "SparkCSV")
+    val train = sc.textFile(file)
 
     def splitData(datum: Array[String]): LabeledPoint = {
       val loss: Double = if (parseDouble(datum.last) > 5.0) 1.0 else 0.0
@@ -57,6 +57,7 @@ object TestTree {
   def main(args: Array[String]) {
     System.setProperty("spark.executor.memory", "1500m")
 
-    processLoan()
+    println("Usage: [master] [file_path]")
+    processLoan(args(0), args(1))
   }
 }
