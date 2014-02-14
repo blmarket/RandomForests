@@ -22,7 +22,7 @@ object TestTree {
     println(tree)
   }
 
-  def processLoan(master: String, file: String) {
+  def processLoan(file: String) {
     def parseDouble(x: String): Double = {
       x match {
         case "NA" => Double.NaN
@@ -55,8 +55,10 @@ object TestTree {
   }
 
   def main(args: Array[String]) {
-    println("Usage: [master] [file_path]")
-    testIris()
-    // processLoan(args(0), args(1))
+    System.setProperty("spark.executor.memory", "6g")
+
+    println("Usage: [file_path]")
+    // testIris()
+    processLoan(args(0))
   }
 }
