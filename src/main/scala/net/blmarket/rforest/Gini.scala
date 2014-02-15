@@ -48,7 +48,7 @@ object Gini {
     }
   }
 
-  def parimpurity[T <: Iterable[Boolean]](splits: RDD[(T, Double)]) = {
+  def parimpurity[T <: Iterable[Boolean]](splits: RDD[(T, Double)]): Iterable[Double] = {
     val scored = splits.map(x => {
       val f = x._2 > 0.5
       x._1.map(y => {
@@ -61,7 +61,7 @@ object Gini {
     })
     println(scoresum)
     val scores = scoresum.map(x => score(x))
-    println(scores)
+    scores
   }
 }
 
