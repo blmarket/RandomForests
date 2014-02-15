@@ -1,6 +1,6 @@
 package net.blmarket.rforest
 
-abstract class DecisionTree { def predict(features: Array[Double]): Double }
+abstract class DecisionTree { def predict(features: Array[Double]): Option[Double] }
 
 /**
  * Internal node in Decision Tree, and has two children.
@@ -9,14 +9,20 @@ abstract class DecisionTree { def predict(features: Array[Double]): Double }
  * @param right world of FALSE
  */
 case class DecisionTreeNode(split: Splitter, left: DecisionTree, right: DecisionTree) extends DecisionTree {
-  override def predict(features: Array[Double]): Double = split.func(features) match {
-    case None => -1.0
+  override def toString: String = {
+    "(%s, %s)".format(left, right)
+  }
+
+  override def predict(features: Array[Double]): Option[Double] = split.func(features) match {
+    case None => None
     case Some(true) => left.predict(features)
     case Some(false) => right.predict(features)
   }
 }
 
 case class DecisionTreeLeaf(label: Double) extends DecisionTree {
-  override def predict(features: Array[Double]): Double = label
+  override def toString: String = label.toString
+
+  override def predict(features: Array[Double]): Option[Double] = Some(label)
 }
 

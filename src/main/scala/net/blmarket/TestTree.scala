@@ -1,7 +1,7 @@
 package net.blmarket
 
 import org.apache.spark.SparkContext
-import net.blmarket.rforest.{ClassedPoint, TreeBuilder}
+import net.blmarket.rforest.{TrainErrorEstimation, ClassedPoint, TreeBuilder}
 import org.apache.spark.rdd.RDD
 
 object TestTree {
@@ -40,7 +40,8 @@ object TestTree {
     }
 
     val data = train.map(x => splitData(x.split(","))).cache()
-    trainAndTest(data)
+    val tree = TreeBuilder.build(data, MAX_DEPTH)
+    TrainErrorEstimation.estimateError(data, tree)
   }
 
   def main(args: Array[String]) {
