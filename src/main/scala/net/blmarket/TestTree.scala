@@ -40,6 +40,9 @@ object TestTree {
     }
 
     val data = train.map(x => splitData(x.split(","))).cache()
+    val trees = Seq.fill(20)(TreeBuilder.build(data, MAX_DEPTH))
+    trees.foreach(println(_))
+
     val tree = TreeBuilder.build(data, MAX_DEPTH)
     TrainErrorEstimation.estimateError(data, tree)
   }

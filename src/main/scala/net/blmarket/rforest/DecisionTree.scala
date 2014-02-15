@@ -1,6 +1,6 @@
 package net.blmarket.rforest
 
-abstract class DecisionTree { def predict(features: Array[Double]): Option[Double] }
+abstract class DecisionTree extends Predictor
 
 /**
  * Internal node in Decision Tree, and has two children.
@@ -20,9 +20,9 @@ case class DecisionTreeNode(split: Splitter, left: DecisionTree, right: Decision
   }
 }
 
-case class DecisionTreeLeaf(label: Double) extends DecisionTree {
+case class DecisionTreeLeaf(label: Option[Double]) extends DecisionTree {
   override def toString: String = label.toString
 
-  override def predict(features: Array[Double]): Option[Double] = Some(label)
+  override def predict(features: Array[Double]): Option[Double] = label
 }
 
