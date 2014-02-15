@@ -5,7 +5,7 @@ import net.blmarket.rforest.{RandomForests, TrainErrorEstimation, ClassedPoint, 
 import org.apache.spark.rdd.RDD
 
 object TestTree {
-  final val MAX_DEPTH: Int = 4
+  final val MAX_DEPTH: Int = 10
 
   def processLoan(file: String) {
     def parseDouble(x: String): Double = {
