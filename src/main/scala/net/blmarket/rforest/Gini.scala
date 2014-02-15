@@ -22,6 +22,46 @@ object Gini {
     val total = r1.reduce((a, b) => (a._1 + b._1, a._2 + b._2))
     total._2 / total._1
   }
-}
 
+  /**
+   * Calculates Gini score about two classes
+   *
+   * @param c1
+   * @param c2
+   * @return
+   */
+  def nodeScore(c1: Double, c2: Double): Double = {
+    val sqsum = c1 * c1 + c2 * c2
+    val sum = c1 + c2
+
+    1.0 - sqsum / sum / sum
+  }
+
+  def score(x: List[Int]): Double = {
+    x.map(_.toDouble) match {
+      case List(a, b, c, d) => {
+        val s1 = nodeScore(a, c)
+        val s2 = nodeScore(b, d)
+        (s1 * (a + c) + s2 * (b + d)) / (a + b + c + d)
+      }
+      case _ => ???
+    }
+  }
+
+  def parimpurity[T <: Iterable[Boolean]](splits: RDD[(T, Double)]) = {
+    val scored = splits.map(x => {
+      val f = x._2 > 0.5
+      x._1.map(y => {
+        List(f && y, f && !y, !f && y, !f && !y).map(if (_) 1 else 0)
+      })
+    })
+    scored.foreach(println(_))
+    val scoresum = scored.reduce((x, y) => {
+      x.zip(y).map(t => t._1.zip(t._2).map(u => u._1 + u._2))
+    })
+    println(scoresum)
+    val scores = scoresum.map(x => score(x))
+    println(scores)
+  }
+}
 

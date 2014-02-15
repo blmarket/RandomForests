@@ -7,6 +7,7 @@ import org.apache.spark.mllib.regression.LabeledPoint
 object TreeBuilder {
   def build(data: RDD[LabeledPoint], leftDepth: Int): DecisionTree = {
     if (leftDepth == 0) {
+      // FIXME: rather use probability than select only one.
       val arr = data.groupBy(_.label).mapValues(x => x.size).collect()
       val label = if(arr.length == 0)
         0
