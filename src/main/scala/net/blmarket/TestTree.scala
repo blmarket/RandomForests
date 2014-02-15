@@ -1,25 +1,11 @@
 package net.blmarket
 
 import org.apache.spark.SparkContext
-import net.blmarket.rforest.{TrainErrorEstimation, ClassedPoint, TreeBuilder}
+import net.blmarket.rforest.{RandomForests, TrainErrorEstimation, ClassedPoint, TreeBuilder}
 import org.apache.spark.rdd.RDD
 
 object TestTree {
   final val MAX_DEPTH: Int = 4
-
-  def trainAndTest(data: RDD[ClassedPoint]) {
-    val tree = TreeBuilder.build(data, MAX_DEPTH)
-
-    val labelAndPreds = data.map {
-      point =>
-        val prediction = tree.predict(point.features)
-        (point.label, prediction)
-    }
-
-    val trainErr = labelAndPreds.filter(r => r._1 != r._2).count.toDouble / data.count
-    println("Training Error = " + trainErr)
-    println(tree)
-  }
 
   def processLoan(file: String) {
     def parseDouble(x: String): Double = {
@@ -40,11 +26,12 @@ object TestTree {
     }
 
     val data = train.map(x => splitData(x.split(","))).cache()
-    val trees = Seq.fill(20)(TreeBuilder.build(data, MAX_DEPTH))
-    trees.foreach(println(_))
 
-    val tree = TreeBuilder.build(data, MAX_DEPTH)
-    TrainErrorEstimation.estimateError(data, tree)
+    val rf = RandomForests.createRandomForests(data, MAX_DEPTH)
+    TrainErrorEstimation.estimateError(data, rf)
+
+    // val tree = TreeBuilder.build(data, MAX_DEPTH)
+    // TrainErrorEstimation.estimateError(data, tree)
   }
 
   def main(args: Array[String]) {
