@@ -4,9 +4,11 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.rdd.RDD
 import scala.util.Random
+import scala.None
 
-case class Splitter(func: (Array[Double] => Boolean))
+case class Splitter(func: (Array[Double] => Option[Boolean]))
 
+/*
 object MySplitter {
   // Remind, calculating variance of unnormalized data is useless.
   def calcVariance(data: RDD[Double]): Double = {
@@ -30,7 +32,10 @@ object MySplitter {
 
       val split_val = Random.nextDouble() * (max_feature - min_feature) + min_feature
 
-      Splitter(a => a(pick) >= split_val)
+      Splitter(a => {
+        val v = a(pick)
+        if (v.isNaN) None else Some(v >= split_val)
+      })
     }
 
     def trysplit = {
@@ -45,4 +50,4 @@ object MySplitter {
     (minsplit._2, minsplit._3)
   }
 }
-
+*/

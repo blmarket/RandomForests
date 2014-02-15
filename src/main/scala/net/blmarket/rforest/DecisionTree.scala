@@ -9,7 +9,11 @@ abstract class DecisionTree { def predict(features: Array[Double]): Double }
  * @param right world of FALSE
  */
 case class DecisionTreeNode(split: Splitter, left: DecisionTree, right: DecisionTree) extends DecisionTree {
-  override def predict(features: Array[Double]): Double = (if(split.func(features)) left else right).predict(features)
+  override def predict(features: Array[Double]): Double = split.func(features) match {
+    case None => -1.0
+    case Some(true) => left.predict(features)
+    case Some(false) => right.predict(features)
+  }
 }
 
 case class DecisionTreeLeaf(label: Double) extends DecisionTree {

@@ -5,7 +5,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.regression.LabeledPoint
 
 object TreeBuilder {
-  def build(data: RDD[LabeledPoint], leftDepth: Int): DecisionTree = {
+  def build(data: RDD[ClassedPoint], leftDepth: Int): DecisionTree = {
     if (leftDepth == 0) {
       // FIXME: rather use probability than select only one.
       val arr = data.groupBy(_.label).mapValues(x => x.size).collect()
@@ -17,12 +17,12 @@ object TreeBuilder {
         arr(1)._1
       DecisionTreeLeaf(label)
     } else {
-      val (split, childs) = MySplitter.split(data)
+      val bestSplit = MySplitter2.split(data)
+      val children = data.map(x => (bestSplit.func(x.features), x))
+      val leftChild = children.filter(_._1.getOrElse(false)).map(_._2)
+      val rightChild = children.filter(_._1.getOrElse(true) == false).map(_._2)
 
-      val child1 = childs.filter(_._1).map(_._2)
-      val child2 = childs.filter(!_._1).map(_._2)
-
-      DecisionTreeNode(split, build(child1, leftDepth - 1), build(child2, leftDepth - 1))
+      DecisionTreeNode(bestSplit, build(leftChild, leftDepth - 1), build(rightChild, leftDepth - 1))
     }
   }
 }

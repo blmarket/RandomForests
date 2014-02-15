@@ -48,18 +48,19 @@ object Gini {
     }
   }
 
-  def parimpurity[T <: Iterable[Boolean]](splits: RDD[(T, Double)]): Iterable[Double] = {
+  def parimpurity[T <: Iterable[Option[Boolean]]](splits: RDD[(T, Int)]): Iterable[Double] = {
     val scored = splits.map(x => {
-      val f = x._2 > 0.5
-      x._1.map(y => {
-        List(f && y, f && !y, !f && y, !f && !y).map(if (_) 1 else 0)
+      // FIXME: Currently only binary classification is supported
+      val f = x._2 == 1
+      x._1.map(yy => yy match {
+        case Some(y) => List(f && y, f && !y, !f && y, !f && !y).map(if (_) 1 else 0)
+        case None => List(0, 0, 0, 0)
       })
     })
-    scored.foreach(println(_))
     val scoresum = scored.reduce((x, y) => {
       x.zip(y).map(t => t._1.zip(t._2).map(u => u._1 + u._2))
     })
-    println(scoresum)
+
     val scores = scoresum.map(x => score(x))
     scores
   }
