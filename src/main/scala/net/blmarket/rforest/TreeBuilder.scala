@@ -21,7 +21,6 @@ object TreeBuilder {
 
         DecisionTreeNode(bestSplit, build(leftChild, leftDepth - 1), build(rightChild, leftDepth - 1))
       }
-
     }
   }
 }

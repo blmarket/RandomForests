@@ -10,7 +10,7 @@ class SplitterFunSuite extends FunSuite {
     val sc = new SparkContext("local", "test")
     val train = sc.textFile("iris.data")
 
-    def parseIris(datum: Array[String]) = ClassedPoint(datum.head.toInt, datum.tail.map(_.toDouble))
+    def parseIris(datum: Array[String]) = ClassedPoint(0, datum.head.toInt, datum.tail.map(_.toDouble))
 
     val data = train.map(x => parseIris(x.split(",")))
     val tree = TreeBuilder.build(data, 3)

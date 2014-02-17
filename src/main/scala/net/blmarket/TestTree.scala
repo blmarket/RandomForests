@@ -5,9 +5,9 @@ import net.blmarket.rforest.{RandomForests, TrainErrorEstimation, ClassedPoint, 
 import org.apache.spark.rdd.RDD
 
 object TestTree {
-  final val MAX_DEPTH: Int = 10
+  final val MAX_DEPTH: Int = 4
 
-  def processLoan(file: String) {
+  def processLoan(trainFile: String, testFile: String, classCut: Int) {
     def parseDouble(x: String): Double = {
       x match {
         case "NA" => Double.NaN
@@ -16,13 +16,21 @@ object TestTree {
     }
 
     val sc = new SparkContext("local", "SparkCSV", "", List("target/scala-2.10/randomforests_2.10-0.1.0.jar"))
-    val train = sc.textFile(file)
+    val train = sc.textFile(trainFile)
 
     def splitData(datum: Array[String]): ClassedPoint = {
-      val loss: Int = if (parseDouble(datum.last) > 5.0) 1 else 0
-      val others = datum.init.map(parseDouble(_))
+      val id = datum.head.toLong
+      val loss: Int = if (datum.last.toInt >= classCut) 1 else 0
+      val others = datum.init.tail.map(parseDouble(_))
 
-      ClassedPoint(loss, others)
+      ClassedPoint(id, loss, others)
+    }
+
+    def parseTest(datum: Array[String]): (Long, Array[Double]) = {
+      val id = datum.head.toLong
+      val features = datum.tail.map(parseDouble(_))
+
+      (id, features)
     }
 
     val data = train.map(x => splitData(x.split(","))).cache()
@@ -30,14 +38,18 @@ object TestTree {
     val rf = RandomForests.createRandomForests(data, MAX_DEPTH)
     TrainErrorEstimation.estimateError(data, rf)
 
-    // val tree = TreeBuilder.build(data, MAX_DEPTH)
-    // TrainErrorEstimation.estimateError(data, tree)
+    data.map(x => (x.id, x.label, rf.predict(x.features).getOrElse(-1.0))).saveAsTextFile("result.txt")
+
+    val testData = sc.textFile(testFile).map(x => parseTest(x.split(",")))
+    val predictResult = testData.map(x => (x._1, rf.predict(x._2)))
+
+    predictResult.saveAsTextFile("result" + System.currentTimeMillis())
   }
 
   def main(args: Array[String]) {
     System.setProperty("spark.executor.memory", "1g")
 
     println("Usage: [file_path]")
-    processLoan("train0.csv")
+    processLoan(args(0), args(1), args(2).toInt)
   }
 }
