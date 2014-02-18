@@ -16,7 +16,8 @@ object TestTree {
       }
     }
 
-    val sc = new SparkContext("spark://ec2-176-34-3-175.ap-northeast-1.compute.amazonaws.com", "SparkCSV", "/root/spark", List("target/scala-2.10/randomforests_2.10-0.1.0.jar"))
+    // val sc = new SparkContext("spark://ec2-176-34-3-175.ap-northeast-1.compute.amazonaws.com", "SparkCSV", "/root/spark", List("target/scala-2.10/randomforests_2.10-0.1.0.jar"))
+    val sc = new SparkContext("local[3]", "SparkCSV", "", List("target/scala-2.10/randomforests_2.10-0.1.0.jar"))
     val train = sc.textFile(trainFile)
 
     def splitData(datum: Array[String]): ClassedPoint = {
@@ -49,6 +50,7 @@ object TestTree {
 
   def main(args: Array[String]) {
     System.setProperty("spark.executor.memory", "4g")
+    System.setProperty("log4j.rootCategory", "WARN") // FIXME: It doesn't works.
 
     println("Usage: [file_path]")
     processLoan(PREFIX + args(0), PREFIX + args(1), args(2).toInt)
